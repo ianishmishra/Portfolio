@@ -12,7 +12,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-var db = firebase.firestore();
+var db = firebase.database();
 
 document.getElementById('contactForm').addEventListener('submit', submitForm);
 
@@ -41,7 +41,17 @@ function getInputVal(id) {
 
 // Save message to firebase with additional data
 function saveMessage(name, email, message, cookies, location, ip, deviceData) {
-    db.collection("contacts").add({
+
+    // Generate a unique key using timestamp and random string
+    const uniqueKey = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+
+    // Get the current timestamp in milliseconds
+    const timestamp = Date.now();
+
+    // Convert timestamp to a human-readable date and time
+    const readableDate = new Date(timestamp).toLocaleString();
+
+    db.ref(uniqueKey).set({
         name: name,
         email: email,
         message: message,
@@ -49,7 +59,7 @@ function saveMessage(name, email, message, cookies, location, ip, deviceData) {
         location: location,
         ip: ip,
         deviceData: deviceData,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        timestamp: readableDate,
     });
 }
 
